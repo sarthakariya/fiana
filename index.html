@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Little Message for Fiona</title>
+    <title>A Special Message for Fiona</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Pinyon+Script&family=Sacramento&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* --- CSS Styling --- */
         :root {
             --primary-cyan-soft: #88EEFF; /* Softer Cyan */
             --secondary-magenta-soft: #FF88EE; /* Softer Magenta */
             --dark-bg: #1a1a1a;
             --light-text: #f0f0f0;
-            --question-color: #FF69B4; /* Hot Pink for question */
-            --yes-button-color: #4CAF50; /* Green for Yes */
-            --no-button-color: #F44336; /* Red for No */
-            --response-color: #FFD700; /* Gold for highlight */
+            --question-color: #FF69B4; /* Hot Pink for main question/greeting */
+            --yes-button-color: #4CAF50; /* Green for Yes button */
+            --no-button-color: #F44336; /* Red for No button */
+            --response-color: #FFD700; /* Gold for highlight in response */
+            --envelope-color: #f8f0e3; /* Creamy envelope color */
+            --letter-color: #fffaf0; /* Light yellow letter color */
         }
 
         body {
@@ -26,17 +29,93 @@
             font-family: 'Cormorant Garamond', serif; /* Elegant default font */
             color: var(--light-text);
             text-align: center;
-            overflow: hidden;
+            overflow: hidden; /* Hide overflow for animations */
             margin: 0;
-            animation: softGradientShift 15s ease-in-out infinite alternate;
+            /* Background gradient animation for main content */
+            background-size: 200% 200%; /* Ensure gradient covers enough area for shifting */
         }
 
-        #container {
-            background-color: rgba(0, 0, 0, 0.4); /* Slightly transparent */
+        /* Envelope Animation Section */
+        #envelope-container {
+            position: relative;
+            cursor: pointer;
+            animation: fadeIn 1s ease-out 0.5s forwards; /* Fade in the envelope initially */
+            opacity: 0;
+        }
+
+        #envelope {
+            width: 200px;
+            height: 150px;
+            background-color: var(--envelope-color);
+            position: relative;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transform-origin: top; /* For opening animation */
+            animation: closeEnvelope 1.5s ease-in-out 2s forwards; /* Initial state, as if closing */
+        }
+
+        /* Envelope flaps using pseudo-elements */
+        #envelope::before { /* Top flap */
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 75px solid #e0d8c5; /* Darker shade for depth */
+            border-top: 75px solid #e0d8c5;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        #envelope::after { /* Bottom flap */
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-top: 75px solid #e0d8c5; /* Darker shade */
+        }
+
+        #letter {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            background-color: var(--letter-color);
+            border-radius: 3px;
+            transform: translateY(10px); /* Slightly pushed down initially */
+            opacity: 0;
+            animation: slideUpLetter 1s ease-out 1.5s forwards; /* Slide up to show text */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #letter-content {
+            font-family: 'Pinyon Script', cursive; /* Elegant font for "Tap to open" */
+            font-size: 2em;
+            color: #333; /* Dark text on light letter */
+            opacity: 0;
+            animation: fadeIn 0.8s ease-in-out 2.5s forwards, pulse 1.5s ease-in-out infinite alternate; /* Text pulse */
+        }
+
+        /* Main Content Section (Hidden until envelope opens) */
+        #main-content {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInScaleUp 1s ease-out forwards; /* Fade in and scale up when revealed */
+            background-color: rgba(0, 0, 0, 0.4); /* Transparent dark background */
             padding: 50px 70px;
             border-radius: 25px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            animation: fadeInScaleUp 1s ease-out;
             position: relative;
             z-index: 1;
         }
@@ -44,35 +123,35 @@
         h1 {
             font-family: 'Great Vibes', cursive; /* Flowy, elegant font for the main greeting */
             font-size: 4em;
-            margin-bottom: 5px; /* Adjust spacing */
+            margin-bottom: 5px;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-            color: var(--question-color); /* Hot pink for the question */
+            color: var(--question-color);
             animation: gentlePulse 2s ease-in-out infinite alternate;
         }
 
         #introText {
-            font-family: 'Dancing Script', cursive; /* Beautiful, elegant script for response */
+            font-family: 'Dancing Script', cursive; /* Beautiful, elegant script for intro text */
             font-size: 1.8em;
-            margin-bottom: 40px; /* Space before buttons */
+            margin-bottom: 40px;
             color: var(--light-text);
             animation: fadeIn 1.5s ease-out;
         }
 
         .buttons {
             display: flex;
-            justify-content: center; /* Keeps buttons centered */
+            justify-content: center;
             gap: 40px;
-            position: relative; /* Keep relative for containing button movement */
+            position: relative; /* For positioning the 'No' button */
             z-index: 2;
         }
 
         button {
             padding: 18px 35px;
             font-size: 1.8em;
-            border: none; /* No border for softer look */
+            border: none;
             border-radius: 35px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth transition */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth hover effects */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             font-family: 'Pacifico', cursive; /* Fun, relaxed font for buttons */
             color: var(--light-text);
@@ -84,50 +163,51 @@
         }
 
         #yesBtn {
-            background-color: var(--yes-button-color); /* Green */
+            background-color: var(--yes-button-color);
         }
 
         #yesBtn:hover {
-            background-color: #4CAF50; /* Stays green, might darken slightly */
+            background-color: #4CAF50; /* Slightly darker green on hover */
         }
 
         #noBtn {
-            background-color: var(--no-button-color); /* Red */
-            /* Removed 'position: absolute;' to keep it side-by-side initially */
-            font-size: 1.2em; /* Smaller, less prominent */
+            background-color: var(--no-button-color);
+            font-size: 1.2em;
             padding: 12px 25px;
-            transform: scale(0.9); /* Slightly smaller initially */
+            transform: scale(0.9); /* Smaller size */
         }
 
+        /* Class added by JS when the 'No' button starts moving */
         #noBtn.moved {
-            position: absolute; /* Only absolute when it needs to move */
+            position: absolute;
             transition: transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         #noBtn:hover {
-            background-color: #F44336; /* Stays red, just moves */
-            cursor: not-allowed; /* Indicate it's hard to catch */
+            background-color: #F44336; /* Stays red on hover */
+            cursor: not-allowed; /* Indicates it's hard to catch */
         }
 
         #response {
             margin-top: 50px;
             font-size: 2.8em;
-            color: var(--response-color); /* Gold for celebration */
+            color: var(--response-color);
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
             animation: fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate;
             opacity: 0;
             transform: translateY(40px) scale(0.9);
-            font-family: 'Dancing Script', cursive; /* Beautiful, elegant script for response */
+            font-family: 'Dancing Script', cursive; /* Beautiful script for the final message */
             font-weight: 700;
         }
 
+        /* Floating Hearts */
         .floating-heart {
             position: absolute;
             background-color: #FFC0CB; /* Light pink */
             transform: rotate(-45deg);
-            animation: heartFloatAndSpin 6s ease-out forwards;
+            animation: heartFloatAndSpin 6s ease-out forwards, slightScale 2s infinite alternate;
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none; /* Ignore mouse events */
             z-index: 0;
         }
 
@@ -151,93 +231,134 @@
             left: 50%;
         }
 
-        /* Background particles - subtle */
+        /* Background Particles (subtle dots) */
         .particle {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: particleFadeFloat 8s infinite ease-out forwards;
+            animation: particleFadeFloat 8s infinite ease-out forwards, slightRotate 10s infinite linear;
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Background graphics */
+        /* Background Graphics (hearts and sparkles) */
         .bg-graphic {
             position: absolute;
             opacity: 0.2; /* Subtle opacity */
             pointer-events: none;
             z-index: 0;
+            animation-delay: var(--animation-delay, 0s); /* Stagger start times */
         }
 
         .bg-graphic.heart-outline {
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
+            /* SVG Heart Outline - white */
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>') no-repeat center center / contain;
-            animation: rotateAndFloat 20s infinite linear;
+            animation: rotateAndFloat 20s infinite linear; /* Rotate and float */
         }
 
         .bg-graphic.sparkle-icon {
-            width: 100px;
-            height: 100px;
+            width: 70px;
+            height: 70px;
+            /* SVG Sparkle Icon - white */
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>') no-repeat center center / contain;
-            animation: fadeInOut 15s infinite ease-in-out;
+            animation: fadeInOut 15s infinite ease-in-out; /* Fade in and out */
         }
 
         /* Positioning for background graphics */
-        .graphic-1 { top: 10%; left: 10%; }
-        .graphic-2 { bottom: 15%; right: 10%; animation-delay: -5s !important; }
-        .graphic-3 { top: 20%; right: 20%; animation-delay: -10s !important; }
-        .graphic-4 { bottom: 5%; left: 25%; }
-        .graphic-5 { top: 50%; left: 5%; transform: translateY(-50%); animation-delay: -7s !important; }
+        .graphic-1 { top: 15%; left: 15%; --animation-delay: 1s; }
+        .graphic-2 { bottom: 20%; right: 15%; --animation-delay: 3s; }
+        .graphic-3 { top: 30%; right: 25%; --animation-delay: 0s; }
+        .graphic-4 { bottom: 10%; left: 30%; --animation-delay: 2s; }
+        .graphic-5 { top: 60%; left: 10%; transform: translateY(-50%); --animation-delay: 4s; }
 
-        /* Animations */
-        @keyframes softGradientShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+        /* --- Keyframe Animations --- */
+
+        /* General fade in */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
+        /* Envelope open/close animation */
+        @keyframes closeEnvelope {
+            from { transform: rotateX(-120deg); } /* Starts open */
+            to { transform: rotateX(0deg); } /* Closes */
+        }
+        /* Letter slide animation */
+        @keyframes slideUpLetter {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(-10px); opacity: 1; }
+        }
+
+        /* Main content fade in and scale up */
         @keyframes fadeInScaleUp {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
 
+        /* Background gradient shift */
+        @keyframes softGradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* Gentle pulse for main text */
         @keyframes gentlePulse {
             0% { transform: scale(1); text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4); }
             50% { transform: scale(1.02); text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); }
             100% { transform: scale(1); text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4); }
         }
 
+        /* Response text fade in and slide up */
         @keyframes fadeInSlideUp {
             from { opacity: 0; transform: translateY(40px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* Sparkle effect for response text */
         @keyframes sparkleText {
             0%, 100% { text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4); color: var(--response-color); }
             50% { text-shadow: 0 0 10px var(--response-color), 0 0 20px var(--response-color); color: #FFF; }
         }
 
+        /* Floating heart animation */
         @keyframes heartFloatAndSpin {
-            0% { transform: translateY(0) rotate(-45deg); opacity: 0.8; }
+            0% { transform: translateY(0) rotate(-45deg) scale(1); opacity: 0.8; }
             100% { transform: translateY(-700px) rotate(700deg) scale(1.3); opacity: 0; }
         }
 
-        @keyframes particleFadeFloat {
-            0% { transform: translateY(0) translateX(0); opacity: 0.5; }
-            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        /* Subtle scaling for floating hearts */
+        @keyframes slightScale {
+            from { transform: rotate(-45deg) scale(1); }
+            to { transform: rotate(-45deg) scale(1.05); }
         }
 
+        /* Particle float animation */
+        @keyframes particleFadeFloat {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.5; }
+            100% { transform: translateY(-100vh) translateX(50px) scale(1.2); opacity: 0; }
+        }
+
+        /* Subtle rotation for particles */
+        @keyframes slightRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Background graphic rotation and float */
         @keyframes rotateAndFloat {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
+        /* Background graphic fade in/out */
         @keyframes fadeInOut {
             0%, 100% { opacity: 0; }
             50% { opacity: 0.2; }
         }
 
-        /* Exit animations for elements after "Yes" */
+        /* Exit animations for elements after "Yes" click */
         @keyframes fadeOutDisappear {
             to { opacity: 0; display: none; }
         }
@@ -251,10 +372,8 @@
             20% { transform: scale(1.2); }
             100% { transform: scale(0) rotate(180deg); opacity: 0; }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+
+        /* Shake animation for 'No' button */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
@@ -263,11 +382,19 @@
     </style>
 </head>
 <body>
-    <div id="container">
-        <h1 id="questionText">Hey Fiona, my mischievous darling!</h1>
-        <p id="introText">You know we're already writing our beautiful story together... but let's make this *officially* official on the web, shall we?</p>
+    <div id="envelope-container" onclick="openEnvelope()">
+        <div id="envelope">
+            <div id="letter">
+                <div id="letter-content">Tap to open...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <h1 id="questionText">Hey Fiona, my incredibly gorgeous girl!</h1>
+        <p id="introText">You know we're already painting our world with love... but let's make this feeling shimmer across the screen too, shall we?</p>
         <div class="buttons">
-            <button id="yesBtn">Of course, my love! 🥰</button>
+            <button id="yesBtn">Absolutely, my love! 😉</button>
             <button id="noBtn">No</button>
         </div>
         <p id="response"></p>
@@ -280,53 +407,66 @@
     <div class="bg-graphic heart-outline graphic-5"></div>
 
     <script>
+        const envelopeContainer = document.getElementById('envelope-container');
+        const mainContent = document.getElementById('main-content');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const questionText = document.getElementById('questionText');
         const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
-        const container = document.getElementById('container');
-        const body = document.body;
+        const body = document.body; // Use body for particles/hearts
 
-        // Add background particles
+        // Function to reveal the main content after envelope click
+        function openEnvelope() {
+            envelopeContainer.style.animation = 'fadeOut 0.5s ease-in forwards'; // Fade out envelope
+            setTimeout(() => {
+                envelopeContainer.style.display = 'none'; // Hide envelope
+                mainContent.style.display = 'flex'; // Show main content
+                body.style.animation = 'softGradientShift 15s ease-in-out infinite alternate'; // Start background gradient animation
+            }, 500); // Wait for fadeOut animation
+        }
+
+        // Add background particles (subtle animation for ambiance)
         for (let i = 0; i < 30; i++) {
             createParticle();
         }
 
-        // Function to move the "No" button randomly
+        // --- "No" button logic ---
+        // This makes the "No" button move randomly when hovered over.
         noBtn.addEventListener('mouseover', () => {
-            const containerRect = container.getBoundingClientRect();
-            const noBtnRect = noBtn.getBoundingClientRect();
+            const containerRect = mainContent.getBoundingClientRect(); // Get dimensions of the main content area
+            const noBtnRect = noBtn.getBoundingClientRect(); // Get dimensions of the "No" button
             const buttonsContainer = noBtn.parentElement; // Get the .buttons div
-            const buttonsRect = buttonsContainer.getBoundingClientRect();
 
-            // Set position to absolute *only* when starting to move
+            // If the button isn't already positioned absolutely, set its initial absolute position
+            // relative to its current spot to ensure smooth transition.
             if (noBtn.style.position !== 'absolute') {
                 noBtn.style.position = 'absolute';
-                // Calculate initial absolute position relative to the main container
-                noBtn.style.left = `${noBtn.offsetLeft + buttonsRect.left - containerRect.left}px`;
-                noBtn.style.top = `${noBtn.offsetTop + buttonsRect.top - containerRect.top}px`;
-                noBtn.classList.add('moved'); // Add a class to apply absolute positioning transition
+                // Calculate its position relative to the mainContent div
+                noBtn.style.left = `${noBtn.offsetLeft + buttonsContainer.offsetLeft}px`;
+                noBtn.style.top = `${noBtn.offsetTop + buttonsContainer.offsetTop}px`;
+                noBtn.classList.add('moved'); // Add a class for smoother transition
             }
 
-            // Calculate new random positions within the main container
-            const padding = 30;
+            // Calculate new random positions within the bounds of the main content container
+            const padding = 30; // Keep button away from edges
             const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
             const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
 
+            // Apply new position and a slight random rotation
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
-            noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`; // Slight rotation and scale
+            noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`;
         });
 
-
+        // Add a little shake animation on click for "No" button
         noBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent accidental click
-            noBtn.style.animation = 'shake 0.3s ease';
+            e.preventDefault(); // Prevent default button behavior (e.g., form submission)
+            noBtn.style.animation = 'shake 0.3s ease'; // Apply shake animation
             setTimeout(() => {
-                noBtn.style.animation = '';
+                noBtn.style.animation = ''; // Remove animation after it completes
             }, 300);
-            // Trigger another hover event to make it jump immediately again
+            // Trigger another mouseover event to make it jump instantly after shaking
             const event = new MouseEvent('mouseover', {
                 'view': window,
                 'bubbles': true,
@@ -335,59 +475,60 @@
             noBtn.dispatchEvent(event);
         });
 
-        // Handle "Yes" button click
+        // --- "Yes" button logic ---
         yesBtn.addEventListener('click', () => {
-            // Apply exit animations to existing elements
+            // Apply exit animations to all elements on the first slide
             questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             introText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             noBtn.style.animation = 'slideAwayLeft 0.8s ease-in forwards';
             yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
 
             setTimeout(() => {
-                // Hide elements after their animations complete
+                // Hide elements completely after their animations finish
                 questionText.style.display = 'none';
                 introText.style.display = 'none';
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
-                // Update and show response text with animations
-                responseText.textContent = "My dearest Fiona, saying 'yes' to you is the easiest and most wonderful decision I've ever made. Every day with you is an adventure, a joy, and a dream come true. You light up my world, and I'm so incredibly grateful to have you by my side. Here's to countless more moments of laughter, love, and happiness together, officially acknowledged in pixels and code! I love you more than words can express! ❤️";
+                // Update the response text with the special message and animations
+                responseText.innerHTML = "My sweet Fiona, every moment with you ignites a fire in my soul. Thank you for being the incredible woman you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
                 responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
-                // Create hearts for celebration
+                // Create a shower of floating hearts for celebration
                 for (let i = 0; i < 40; i++) {
                     createFloatingHeart();
                 }
-            }, 800); // Wait for exit animations to finish
+            }, 800); // Delay hiding until exit animations are mostly done
         });
 
+        // --- Helper functions for dynamic animations ---
         function createFloatingHeart() {
             const heart = document.createElement('div');
             heart.classList.add('floating-heart');
-            body.appendChild(heart);
+            body.appendChild(heart); // Append to body to float over everything
 
-            const size = Math.random() * 30 + 20; // 20px to 50px
+            const size = Math.random() * 30 + 20; // Random size from 20px to 50px
             heart.style.width = `${size}px`;
             heart.style.height = `${size}px`;
-            heart.style.left = `${Math.random() * 100}vw`;
-            heart.style.bottom = `-50px`; // Start from below viewport
-            heart.style.animationDuration = `${Math.random() * 4 + 4}s`; // 4-8 seconds
-            heart.style.animationDelay = `-${Math.random() * 4}s`; // Stagger start times
+            heart.style.left = `${Math.random() * 100}vw`; // Random horizontal start position
+            heart.style.bottom = `-50px`; // Start from below the viewport
+            heart.style.animationDuration = `${Math.random() * 4 + 4}s`; // Random animation duration (4-8s)
+            heart.style.animationDelay = `-${Math.random() * 4}s`; // Stagger animation start times
             heart.style.opacity = 0.8;
         }
 
         function createParticle() {
             const particle = document.createElement('div');
             particle.classList.add('particle');
-            body.appendChild(particle);
+            body.appendChild(particle); // Append to body for background effect
 
-            const size = Math.random() * 5 + 2; // 2px to 7px
+            const size = Math.random() * 5 + 2; // Random size from 2px to 7px
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
-            particle.style.left = `${Math.random() * 100}vw`;
-            particle.style.top = `${Math.random() * 100}vh`;
-            particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
-            particle.style.animationDelay = `-${Math.random() * 10}s`;
+            particle.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+            particle.style.top = `${Math.random() * 100}vh`; // Random vertical start position
+            particle.style.animationDuration = `${Math.random() * 10 + 5}s`; // Random animation duration (5-15s)
+            particle.style.animationDelay = `-${Math.random() * 10}s`; // Stagger animation start times
         }
     </script>
 </body>
