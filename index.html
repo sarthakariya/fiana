@@ -354,6 +354,56 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
             20%, 40%, 60%, 80% { transform: translateX(10px); }
         }
+
+        /* --- Responsive Design for Smaller Screens --- */
+        @media (max-width: 768px) {
+            #main-content {
+                padding: 30px 20px; /* Reduced padding */
+                width: 90%; /* Take up more width on smaller screens */
+                box-sizing: border-box; /* Include padding in width */
+            }
+
+            h1 {
+                font-size: 2.5em; /* Smaller font for greeting */
+            }
+
+            #introText {
+                font-size: 1.2em; /* Smaller font for intro */
+                margin-bottom: 20px;
+            }
+
+            .buttons {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 20px; /* Smaller gap */
+            }
+
+            button {
+                font-size: 1.4em; /* Smaller button text */
+                padding: 15px 30px; /* Smaller button padding */
+                width: 80%; /* Make buttons take more width */
+                max-width: 250px; /* Limit max width for buttons */
+                margin: 0 auto; /* Center buttons */
+            }
+
+            #noBtn {
+                font-size: 1em; /* Even smaller for no button */
+                padding: 10px 20px;
+            }
+
+            #teaseResponse {
+                font-size: 1.2em; /* Smaller tease text */
+            }
+
+            #response {
+                font-size: 1.8em; /* Smaller final response */
+                margin-top: 30px;
+            }
+
+            /* Hide background graphics for mobile to simplify */
+            .bg-graphic {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -381,6 +431,7 @@
         const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
         const teaseResponseText = document.getElementById('teaseResponse'); // Get the new tease text element
+        const buttonsContainer = document.querySelector('.buttons'); // Get the buttons container
         const body = document.body;
 
         const teasyPhrases = [
@@ -391,6 +442,11 @@
             "Come on, you can't resist this much charm! Try again. ❤️",
             "Oh, you adorable little tease! Press 'Yes' already, you know you want to."
         ];
+
+        // Global variables for 'No' button initial position (captured once)
+        let initialNoBtnLeft = 0;
+        let initialNoBtnTop = 0;
+        let noBtnFirstMove = true; // Flag to capture initial position
 
         // Add background particles (subtle animation for ambiance)
         for (let i = 0; i < 30; i++) {
@@ -417,23 +473,38 @@
 
         // Function to handle "No" button movement
         function moveNoButton() {
-            const containerRect = mainContent.getBoundingClientRect();
+            const mainContentRect = mainContent.getBoundingClientRect();
             const noBtnRect = noBtn.getBoundingClientRect();
-            const buttonsContainer = noBtn.parentElement;
 
-            // Ensure button is positioned absolutely within mainContent for free movement
-            if (noBtn.style.position !== 'absolute') {
+            if (noBtnFirstMove) {
+                // Capture initial position relative to mainContent's top-left
+                const noBtnViewportRect = noBtn.getBoundingClientRect();
+                initialNoBtnLeft = noBtnViewportRect.left - mainContentRect.left;
+                initialNoBtnTop = noBtnViewportRect.top - mainContentRect.top;
+                noBtnFirstMove = false;
+
+                // Immediately set position: absolute after first capture for smooth transition
                 noBtn.style.position = 'absolute';
-                // Calculate its initial absolute position relative to the mainContent div
-                noBtn.style.left = `${noBtn.offsetLeft + buttonsContainer.offsetLeft}px`;
-                noBtn.style.top = `${noBtn.offsetTop + buttonsContainer.offsetTop}px`;
+                noBtn.style.left = `${initialNoBtnLeft}px`;
+                noBtn.style.top = `${initialNoBtnTop}px`;
                 noBtn.classList.add('moved');
             }
 
-            const padding = 30; // Keep some padding from edges
-            // Calculate new random position within the main content area
-            const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
-            const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
+            const maxMovementRange = 100; // Max distance in pixels from the initial position
+
+            // Calculate new random offset within the desired range from the initial position
+            let newOffsetX = (Math.random() - 0.5) * 2 * maxMovementRange; // -range to +range
+            let newOffsetY = (Math.random() - 0.5) * 2 * maxMovementRange;
+
+            // Calculate target position relative to mainContent
+            let targetX = initialNoBtnLeft + newOffsetX;
+            let targetY = initialNoBtnTop + newOffsetY;
+
+            // Clamp targetX and targetY to stay within mainContent boundaries
+            const padding = 15; // Keep some internal padding from mainContent edges
+
+            targetX = Math.max(padding, Math.min(targetX, mainContentRect.width - noBtnRect.width - padding));
+            targetY = Math.max(padding, Math.min(targetY, mainContentRect.height - noBtnRect.height - padding));
 
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
