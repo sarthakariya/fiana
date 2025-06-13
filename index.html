@@ -494,7 +494,8 @@
                 noBtn.classList.add('moved');
             }
 
-            const maxMovementRange = 100; // Max distance in pixels from the initial position
+            // Increased movement range for longer distances
+            const maxMovementRange = 250; // Max distance in pixels from the initial position
 
             // Calculate new random offset within the desired range from the initial position
             let newOffsetX = (Math.random() - 0.5) * 2 * maxMovementRange; // -range to +range
