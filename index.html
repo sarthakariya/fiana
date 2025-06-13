@@ -1,57 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Little Message for Fiona</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Dancing+Script:wght@700&family=Montserrat:wght@400;700&family=Press+Start+2P&family=Shadows+Into+Light&display=swap');
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Proposal ❤️</title>
+        :root {
+            --primary-cyan: #00FFFF;
+            --secondary-magenta: #FF00FF;
+            --dark-bg: #1a1a1a;
+            --light-text: #f0f0f0;
+        }
 
-        <link rel="stylesheet" href="style.css">
-    </head>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--secondary-magenta));
+            font-family: 'Montserrat', sans-serif;
+            color: var(--light-text);
+            text-align: center;
+            overflow: hidden;
+            margin: 0;
+            animation: gradientShift 10s ease-in-out infinite alternate;
+        }
 
-    <body>
+        #container {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 50px 70px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            animation: scaleUp 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+        }
 
-        <div id="popup">
-            Thank you for saying Yes!❤️❤️❤️
-            <img src="path/to/rings.jpg"
- style="aspect-ratio:1/1">
-        </div>
+        h1 {
+            font-family: 'Bungee Spice', cursive;
+            font-size: 3.5em;
+            margin-bottom: 40px;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+            color: var(--primary-cyan);
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
 
-        <div>
-            <b class="loveTEXT">Will You Be Mine?</b>
-            <div class="btn-group">
-                <button id="yes-btn" class="loverbtn">Yes</button>
-                <button id="no-btn" class="loverbtn">No</button>
-            </div>
-        </div>
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+            z-index: 2;
+        }
 
-        <div class="paper heart">
-        </div>
-        <div class="paper image">
-            <p>I LOVE YOU</p>
-            <img src="img" />
-        </div>
-        <div class="paper image">
-            <p> and I fallen in</p>
-            <p>Love with You 😍 </p>
-            <img src="path/to/rings.jpg" />
-        </div>
-        <div class="paper image">
-            <p>How can be </p>
-            <p> someone so cute ❤️ </p>
-            <img src="path/to/rings.jpg" />
-        </div>
-        <div class="paper">
-            <p class="p1"> and My Favorite</p>
-            <p class="p2">Person 😍</p>
-        </div>
-        <div class="paper">
-            <p class="p1">You are Cute </p>
-            <p class="p1">Amazing <span style="color: red !important;">❤️</span></p>
-        </div>
-        <div class="paper">
-            <p class="p1">Drag the papers to move!</p>
-        </div>
-        <script src="script.js"></script>
-    </body>
+        button {
+            padding: 18px 35px;
+            font-size: 1.6em;
+            border: 2px solid var(--light-text);
+            border-radius: 35px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            font-family: 'Shadows Into Light', cursive;
+        }
 
+        button:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        #yesBtn {
+            background-color: var(--secondary-magenta);
+            color: var(--light-text);
+        }
+
+        #yesBtn:hover {
+            background-color: #e600e6; /* Darker magenta */
+        }
+
+        #noBtn {
+            background-color: var(--primary-cyan);
+            color: var(--dark-bg);
+            position: absolute; /* Allows for dynamic positioning */
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.2em;
+            padding: 12px 25px;
+        }
+
+        #noBtn:hover {
+            background-color: #00cccc; /* Darker cyan */
+            color: var(--dark-bg);
+        }
+
+        #response {
+            margin-top: 50px;
+            font-size: 2.5em;
+            color: var(--secondary-magenta);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 1s ease-out forwards, rainbowText 2s linear infinite alternate;
+            opacity: 0;
+            transform: translateY(30px) scale(0.8);
+            font-family: 'Dancing Script', cursive;
+            font-weight: bold;
+        }
+
+        .star {
+            position: absolute;
+            background-color: yellow;
+            border-radius: 50%;
+            animation: twinkle 1.5s infinite alternate, fall 5s linear forwards;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            background-color: #ff69b4; /* Hot pink */
+            transform: rotate(-45deg);
+            animation: beat 1s infinite alternate, floatUpRotate 5s ease-out forwards;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #ff69b4;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -50%;
+            left: 0;
+        }
+
+        .heart::after {
+            top: 0;
+            left: 50%;
+        }
+
+        /* Animations */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); color: var(--primary-cyan); }
+            to { transform: scale(1.05); color: #00bfff; /* Slightly lighter cyan */ }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: translateY(30px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes rainbowText {
+            0% { color: var(--secondary-magenta); }
+            25% { color: var(--primary-cyan); }
+            50% { color: #aaff00; /* Greenish-yellow */ }
+            75% { color: #ff00aa; /* Reddish-pink */ }
+            100% { color: var(--secondary-magenta); }
+        }
+
+        @keyframes twinkle {
+            from { opacity: 0.7; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(120vh) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes beat {
+            from { transform: scale(1) rotate(-45deg); }
+            to { transform: scale(1.1) rotate(-45deg); }
+        }
+
+        @keyframes floatUpRotate {
+            0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
+            100% { transform: translateY(-600px) rotate(720deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Keyframes for button exit animations */
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+        @keyframes slideOutDown {
+            to { transform: translateY(200%) rotateZ(90deg); opacity: 0; }
+        }
+        @keyframes zoomOut {
+            to { transform: scale(0) rotateZ(-180deg); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1 id="questionText">Fiona, my amazing girlfriend!</h1>
+        <div class="buttons">
+            <button id="yesBtn">You know the answer! 😉</button>
+            <button id="noBtn">Nah, still thinking...</button>
+        </div>
+        <p id="response"></p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionText = document.getElementById('questionText');
+        const responseText = document.getElementById('response');
+        const container = document.getElementById('container');
+        const body = document.body;
+
+        // Function to move the "No" button randomly with a bit of a wiggle
+        noBtn.addEventListener('mouseover', () => {
+            const containerRect = container.getBoundingClientRect();
+            const noBtnRect = noBtn.getBoundingClientRect();
+
+            // Calculate max boundaries for the button within the container
+            const maxX = containerRect.width - noBtnRect.width;
+            const maxY = containerRect.height - noBtnRect.height;
+
+            // Generate new random positions
+            const randomX = Math.random() * (maxX - 40) + 20; // 20px padding from edges
+            const randomY = Math.random() * (maxY - 40) + 20;
+
+            noBtn.style.transition = 'transform 0.1s ease-in-out, left 0.3s ease-out, top 0.3s ease-out';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            noBtn.style.transform = `rotate(${Math.random() * 30 - 15}deg)`; // Slight rotation
+            noBtn.style.position = 'absolute';
+        });
+
+        noBtn.addEventListener('click', () => {
+            // Add a little taunt animation or sound here if you like!
+            noBtn.style.animation = 'shake 0.5s ease';
+            setTimeout(() => {
+                noBtn.style.animation = ''; // Reset animation
+            }, 500);
+        });
+
+        // Handle "Yes" button click
+        yesBtn.addEventListener('click', () => {
+            // Apply exit animations to existing elements
+            questionText.style.animation = 'fadeOut 0.5s ease-in forwards';
+            noBtn.style.animation = 'slideOutDown 0.5s ease-in forwards';
+            yesBtn.style.animation = 'zoomOut 0.5s ease-in forwards';
+
+            setTimeout(() => {
+                // Hide elements after their animations complete
+                questionText.style.display = 'none';
+                noBtn.style.display = 'none';
+                yesBtn.style.display = 'none';
+
+                // Update and show response text with animations
+                responseText.textContent = "You always know, my love! ❤️ You make every moment magical, Fiona!";
+                responseText.style.animation = 'fadeInScale 1s ease-out forwards, rainbowText 2s linear infinite alternate';
+
+                // Create lots of stars and hearts for a celebratory effect
+                for (let i = 0; i < 50; i++) {
+                    createStar();
+                    createHeart();
+                }
+            }, 500); // Delay hiding until animations are mostly done
+        });
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            body.appendChild(star);
+
+            const size = Math.random() * 15 + 5; // 5px to 20px
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+            star.style.top = `${Math.random() * 100}vh`; // Random vertical position (for initial appearance)
+            star.style.animationDelay = `-${Math.random() * 3}s, -${Math.random() * 5}s`; // Stagger animation start
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            body.appendChild(heart);
+
+            const size = Math.random() * 25 + 15; // 15px to 40px
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            heart.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+            heart.style.animationDelay = `-${Math.random() * 4}s, -${Math.random() * 3}s`; // Stagger animation start
+        }
+    </script>
+</body>
 </html>
