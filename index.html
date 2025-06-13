@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Little Message for Fiona</title>
+    <title>A Little Message for Fiana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Pinyon+Script&family=Sacramento&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Dancing+Script:wght@700&family=Montserrat:wght@400;700&family=Press+Start+2P&family=Shadows+Into+Light&display=swap');
-
         :root {
-            --primary-cyan: #00FFFF;
-            --secondary-magenta: #FF00FF;
+            --primary-cyan-soft: #88EEFF; /* Softer Cyan */
+            --secondary-magenta-soft: #FF88EE; /* Softer Magenta */
             --dark-bg: #1a1a1a;
             --light-text: #f0f0f0;
+            --question-color: #FF69B4; /* Hot Pink for question */
+            --yes-button-color: #FF4081; /* Brighter Pink for Yes */
+            --no-button-color: #4CAF50; /* Green for No (less dominant) */
+            --response-color: #FFD700; /* Gold for highlight */
         }
 
         body {
@@ -19,32 +22,32 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(45deg, var(--primary-cyan), var(--secondary-magenta));
-            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(45deg, var(--primary-cyan-soft), var(--secondary-magenta-soft));
+            font-family: 'Cormorant Garamond', serif; /* Elegant default font */
             color: var(--light-text);
             text-align: center;
             overflow: hidden;
             margin: 0;
-            animation: gradientShift 10s ease-in-out infinite alternate;
+            animation: softGradientShift 15s ease-in-out infinite alternate;
         }
 
         #container {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.4); /* Slightly transparent */
             padding: 50px 70px;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-            animation: scaleUp 0.8s ease-out;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            animation: fadeInScaleUp 1s ease-out;
             position: relative;
             z-index: 1;
         }
 
         h1 {
-            font-family: 'Bungee Spice', cursive;
-            font-size: 3.5em;
+            font-family: 'Great Vibes', cursive; /* Flowy, elegant font for the main question */
+            font-size: 4em;
             margin-bottom: 40px;
-            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
-            color: var(--primary-cyan);
-            animation: pulse 1.5s ease-in-out infinite alternate;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+            color: var(--question-color); /* Hot pink for the question */
+            animation: gentlePulse 2s ease-in-out infinite alternate;
         }
 
         .buttons {
@@ -57,166 +60,153 @@
 
         button {
             padding: 18px 35px;
-            font-size: 1.6em;
-            border: 2px solid var(--light-text);
+            font-size: 1.8em;
+            border: none; /* No border for softer look */
             border-radius: 35px;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            font-family: 'Shadows Into Light', cursive;
-        }
-
-        button:hover {
-            transform: translateY(-7px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        #yesBtn {
-            background-color: var(--secondary-magenta);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth transition */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            font-family: 'Pacifico', cursive; /* Fun, relaxed font for buttons */
             color: var(--light-text);
         }
 
+        button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        #yesBtn {
+            background-color: var(--yes-button-color);
+        }
+
         #yesBtn:hover {
-            background-color: #e600e6; /* Darker magenta */
+            background-color: #FF1493; /* Deeper Pink */
         }
 
         #noBtn {
-            background-color: var(--primary-cyan);
-            color: var(--dark-bg);
-            position: absolute; /* Allows for dynamic positioning */
-            font-family: 'Press Start 2P', monospace;
-            font-size: 1.2em;
+            background-color: var(--no-button-color); /* Green for "No" */
+            position: absolute;
+            font-size: 1.2em; /* Smaller, less prominent */
             padding: 12px 25px;
+            transform: scale(0.9); /* Slightly smaller initially */
         }
 
         #noBtn:hover {
-            background-color: #00cccc; /* Darker cyan */
-            color: var(--dark-bg);
+            background-color: #4CAF50; /* Stays green, just moves */
+            cursor: not-allowed; /* Indicate it's hard to catch */
         }
 
         #response {
             margin-top: 50px;
-            font-size: 2.5em;
-            color: var(--secondary-magenta);
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-            animation: fadeInScale 1s ease-out forwards, rainbowText 2s linear infinite alternate;
+            font-size: 2.8em;
+            color: var(--response-color); /* Gold for celebration */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+            animation: fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate;
             opacity: 0;
-            transform: translateY(30px) scale(0.8);
-            font-family: 'Dancing Script', cursive;
-            font-weight: bold;
+            transform: translateY(40px) scale(0.9);
+            font-family: 'Dancing Script', cursive; /* Beautiful, elegant script for response */
+            font-weight: 700;
         }
 
-        .star {
+        .floating-heart {
             position: absolute;
-            background-color: yellow;
-            border-radius: 50%;
-            animation: twinkle 1.5s infinite alternate, fall 5s linear forwards;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .heart {
-            position: absolute;
-            background-color: #ff69b4; /* Hot pink */
+            background-color: #FFC0CB; /* Light pink */
             transform: rotate(-45deg);
-            animation: beat 1s infinite alternate, floatUpRotate 5s ease-out forwards;
+            animation: heartFloatAndSpin 6s ease-out forwards;
             opacity: 0;
             pointer-events: none;
             z-index: 0;
         }
 
-        .heart::before,
-        .heart::after {
+        .floating-heart::before,
+        .floating-heart::after {
             content: '';
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: #ff69b4;
+            background-color: #FFC0CB;
             border-radius: 50%;
         }
 
-        .heart::before {
+        .floating-heart::before {
             top: -50%;
             left: 0;
         }
 
-        .heart::after {
+        .floating-heart::after {
             top: 0;
             left: 50%;
         }
 
+        /* Background particles - subtle */
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: particleFadeFloat 8s infinite ease-out forwards;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         /* Animations */
-        @keyframes gradientShift {
+        @keyframes softGradientShift {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
 
-        @keyframes scaleUp {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @keyframes fadeInScaleUp {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        @keyframes pulse {
-            from { transform: scale(1); color: var(--primary-cyan); }
-            to { transform: scale(1.05); color: #00bfff; /* Slightly lighter cyan */ }
+        @keyframes gentlePulse {
+            0% { transform: scale(1); text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4); }
+            50% { transform: scale(1.02); text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); }
+            100% { transform: scale(1); text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4); }
         }
 
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: translateY(30px) scale(0.8); }
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        @keyframes rainbowText {
-            0% { color: var(--secondary-magenta); }
-            25% { color: var(--primary-cyan); }
-            50% { color: #aaff00; /* Greenish-yellow */ }
-            75% { color: #ff00aa; /* Reddish-pink */ }
-            100% { color: var(--secondary-magenta); }
+        @keyframes sparkleText {
+            0%, 100% { text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4); color: var(--response-color); }
+            50% { text-shadow: 0 0 10px var(--response-color), 0 0 20px var(--response-color); color: #FFF; }
         }
 
-        @keyframes twinkle {
-            from { opacity: 0.7; transform: scale(1); }
-            to { opacity: 1; transform: scale(1.2); }
+        @keyframes heartFloatAndSpin {
+            0% { transform: translateY(0) rotate(-45deg); opacity: 0.8; }
+            100% { transform: translateY(-700px) rotate(700deg) scale(1.3); opacity: 0; }
         }
 
-        @keyframes fall {
-            0% { transform: translateY(-10vh) scale(0.5); opacity: 1; }
-            100% { transform: translateY(120vh) scale(1.5); opacity: 0; }
+        @keyframes particleFadeFloat {
+            0% { transform: translateY(0) translateX(0); opacity: 0.5; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
         }
 
-        @keyframes beat {
-            from { transform: scale(1) rotate(-45deg); }
-            to { transform: scale(1.1) rotate(-45deg); }
+        /* Exit animations for elements after "Yes" */
+        @keyframes fadeOutDisappear {
+            to { opacity: 0; display: none; }
         }
 
-        @keyframes floatUpRotate {
-            0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
-            100% { transform: translateY(-600px) rotate(720deg) scale(1.2); opacity: 0; }
+        @keyframes slideAwayLeft {
+            to { transform: translateX(-200%); opacity: 0; }
         }
 
-        /* Keyframes for button exit animations */
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-        @keyframes slideOutDown {
-            to { transform: translateY(200%) rotateZ(90deg); opacity: 0; }
-        }
-        @keyframes zoomOut {
-            to { transform: scale(0) rotateZ(-180deg); opacity: 0; }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        @keyframes bounceOut {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.2); }
+            100% { transform: scale(0) rotate(180deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
     <div id="container">
-        <h1 id="questionText">Fiona, my amazing girlfriend!</h1>
+        <h1 id="questionText">Hey Fiana, my mischievous darling!</h1>
         <div class="buttons">
-            <button id="yesBtn">You know the answer! 😉</button>
-            <button id="noBtn">Nah, still thinking...</button>
+            <button id="yesBtn">Oh, you know it's a 'Yes'! 😉</button>
+            <button id="noBtn">Hmm, let me think...</button>
         </div>
         <p id="response"></p>
     </div>
@@ -229,82 +219,94 @@
         const container = document.getElementById('container');
         const body = document.body;
 
-        // Function to move the "No" button randomly with a bit of a wiggle
+        // Add background particles
+        for (let i = 0; i < 30; i++) {
+            createParticle();
+        }
+
+        // Function to move the "No" button randomly
         noBtn.addEventListener('mouseover', () => {
             const containerRect = container.getBoundingClientRect();
             const noBtnRect = noBtn.getBoundingClientRect();
 
-            // Calculate max boundaries for the button within the container
-            const maxX = containerRect.width - noBtnRect.width;
-            const maxY = containerRect.height - noBtnRect.height;
+            // Keep button within the container, with some padding
+            const padding = 30;
+            const maxX = containerRect.width - noBtnRect.width - padding;
+            const maxY = containerRect.height - noBtnRect.height - padding;
 
-            // Generate new random positions
-            const randomX = Math.random() * (maxX - 40) + 20; // 20px padding from edges
-            const randomY = Math.random() * (maxY - 40) + 20;
+            const randomX = Math.random() * maxX + padding;
+            const randomY = Math.random() * maxY + padding;
 
-            noBtn.style.transition = 'transform 0.1s ease-in-out, left 0.3s ease-out, top 0.3s ease-out';
+            noBtn.style.transition = 'transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
             noBtn.style.left = `${randomX}px`;
             noBtn.style.top = `${randomY}px`;
-            noBtn.style.transform = `rotate(${Math.random() * 30 - 15}deg)`; // Slight rotation
+            noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`; // Slight rotation and scale
             noBtn.style.position = 'absolute';
         });
 
-        noBtn.addEventListener('click', () => {
-            // Add a little taunt animation or sound here if you like!
-            noBtn.style.animation = 'shake 0.5s ease';
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent accidental click
+            noBtn.style.animation = 'shake 0.3s ease';
             setTimeout(() => {
-                noBtn.style.animation = ''; // Reset animation
-            }, 500);
+                noBtn.style.animation = '';
+            }, 300);
+            // Optionally, you can trigger another hover event to make it jump immediately again
+            const event = new MouseEvent('mouseover', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            noBtn.dispatchEvent(event);
         });
 
         // Handle "Yes" button click
         yesBtn.addEventListener('click', () => {
-            // Apply exit animations to existing elements
-            questionText.style.animation = 'fadeOut 0.5s ease-in forwards';
-            noBtn.style.animation = 'slideOutDown 0.5s ease-in forwards';
-            yesBtn.style.animation = 'zoomOut 0.5s ease-in forwards';
+            questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
+            noBtn.style.animation = 'slideAwayLeft 0.8s ease-in forwards';
+            yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
 
             setTimeout(() => {
-                // Hide elements after their animations complete
                 questionText.style.display = 'none';
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
-                // Update and show response text with animations
-                responseText.textContent = "You always know, my love! ❤️ You make every moment magical, Fiona!";
-                responseText.style.animation = 'fadeInScale 1s ease-out forwards, rainbowText 2s linear infinite alternate';
+                responseText.textContent = "Knew it! You're stuck with me, my love! ❤️ And I wouldn't have it any other way. 😉";
+                responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
-                // Create lots of stars and hearts for a celebratory effect
-                for (let i = 0; i < 50; i++) {
-                    createStar();
-                    createHeart();
+                // Create hearts for celebration
+                for (let i = 0; i < 40; i++) {
+                    createFloatingHeart();
                 }
-            }, 500); // Delay hiding until animations are mostly done
+            }, 800); // Wait for exit animations to finish
         });
 
-        function createStar() {
-            const star = document.createElement('div');
-            star.classList.add('star');
-            body.appendChild(star);
-
-            const size = Math.random() * 15 + 5; // 5px to 20px
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-            star.style.top = `${Math.random() * 100}vh`; // Random vertical position (for initial appearance)
-            star.style.animationDelay = `-${Math.random() * 3}s, -${Math.random() * 5}s`; // Stagger animation start
-        }
-
-        function createHeart() {
+        function createFloatingHeart() {
             const heart = document.createElement('div');
-            heart.classList.add('heart');
+            heart.classList.add('floating-heart');
             body.appendChild(heart);
 
-            const size = Math.random() * 25 + 15; // 15px to 40px
+            const size = Math.random() * 30 + 20; // 20px to 50px
             heart.style.width = `${size}px`;
             heart.style.height = `${size}px`;
-            heart.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-            heart.style.animationDelay = `-${Math.random() * 4}s, -${Math.random() * 3}s`; // Stagger animation start
+            heart.style.left = `${Math.random() * 100}vw`;
+            heart.style.bottom = `-50px`; // Start from below viewport
+            heart.style.animationDuration = `${Math.random() * 4 + 4}s`; // 4-8 seconds
+            heart.style.animationDelay = `-${Math.random() * 4}s`; // Stagger start times
+            heart.style.opacity = 0.8;
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            body.appendChild(particle);
+
+            const size = Math.random() * 5 + 2; // 2px to 7px
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.top = `${Math.random() * 100}vh`;
+            particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            particle.style.animationDelay = `-${Math.random() * 10}s`;
         }
     </script>
 </body>
