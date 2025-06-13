@@ -340,13 +340,13 @@
 
         /* Exit animations for elements after "Yes" click */
         @keyframes fadeOutDisappear {
-            to { opacity: 0; display: none; }
+            to { opacity: 0; visibility: hidden; } /* Use visibility: hidden for full disappearance */
         }
 
         @keyframes bounceOut {
             0% { transform: scale(1); }
             20% { transform: scale(1.2); }
-            100% { transform: scale(0) rotate(180deg); opacity: 0; }
+            100% { transform: scale(0) rotate(180deg); opacity: 0; visibility: hidden; }
         }
 
         /* Shake animation for 'No' button */
@@ -432,7 +432,6 @@
         const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
         const teaseResponseText = document.getElementById('teaseResponse'); // Get the new tease text element
-        const buttonsContainer = document.querySelector('.buttons'); // Get the buttons container
         const body = document.body;
 
         const teasyPhrases = [
@@ -555,6 +554,9 @@
                 introText.style.display = 'none';
                 yesBtn.style.display = 'none';
                 teaseResponseText.style.display = 'none'; // Ensure tease text is hidden
+
+                // No longer setting noBtn.style.display = 'none';
+                // noBtn will remain visible and interactive after 'Yes' is clicked.
 
                 // Adjusted response text with white color and light red outline
                 responseText.innerHTML = "My sweet Fiana, every moment with you ignites a fire in my soul. Thank you for being the incredible girl you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
