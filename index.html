@@ -60,9 +60,9 @@
 
         .buttons {
             display: flex;
-            justify-content: center;
+            justify-content: center; /* Keeps buttons centered */
             gap: 40px;
-            position: relative;
+            position: relative; /* Keep relative for containing button movement */
             z-index: 2;
         }
 
@@ -93,10 +93,15 @@
 
         #noBtn {
             background-color: var(--no-button-color); /* Red */
-            position: absolute;
+            /* Removed 'position: absolute;' to keep it side-by-side */
             font-size: 1.2em; /* Smaller, less prominent */
             padding: 12px 25px;
             transform: scale(0.9); /* Slightly smaller initially */
+        }
+
+        #noBtn.moved {
+            position: absolute; /* Only absolute when it needs to move */
+            transition: transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         #noBtn:hover {
@@ -260,10 +265,10 @@
 <body>
     <div id="container">
         <h1 id="questionText">Hey Fiana, my mischievous darling!</h1>
-        <p id="introText">Just a little something to make you smile even more today.</p>
+        <p id="introText">You know we're already writing our beautiful story together... but let's make this official on the web!</p>
         <div class="buttons">
-            <button id="yesBtn">Oh, you know it's a 'Yes'! 😉</button>
-            <button id="noBtn">Hmm, let me think...</button>
+            <button id="yesBtn">Of course, my love! 🥰</button>
+            <button id="noBtn">Hmmm, let me think about that...</button>
         </div>
         <p id="response"></p>
     </div>
@@ -292,21 +297,32 @@
         noBtn.addEventListener('mouseover', () => {
             const containerRect = container.getBoundingClientRect();
             const noBtnRect = noBtn.getBoundingClientRect();
+            const buttonsContainer = noBtn.parentElement; // Get the .buttons div
+            const buttonsRect = buttonsContainer.getBoundingClientRect();
 
-            // Keep button within the container, with some padding
+            // Set position to absolute *only* when starting to move
+            if (noBtn.style.position !== 'absolute') {
+                noBtn.style.position = 'absolute';
+                // Calculate initial absolute position relative to its current spot in .buttons
+                noBtn.style.left = `${noBtn.offsetLeft}px`;
+                noBtn.style.top = `${noBtn.offsetTop}px`;
+                noBtn.classList.add('moved'); // Add a class to apply absolute positioning transition
+            }
+
+            // Calculate new random positions within the container
             const padding = 30;
-            const maxX = containerRect.width - noBtnRect.width - padding;
-            const maxY = containerRect.height - noBtnRect.height - padding;
+            // The boundaries should be relative to the 'buttons' container if the button is within it
+            // Or relative to the main 'container' div if it should float anywhere
+            // For floating within the main container for more chaotic movement:
+            const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
+            const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
 
-            const randomX = Math.random() * maxX + padding;
-            const randomY = Math.random() * maxY + padding;
 
-            noBtn.style.transition = 'transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            noBtn.style.left = `${randomX}px`;
-            noBtn.style.top = `${randomY}px`;
+            noBtn.style.left = `${targetX}px`;
+            noBtn.style.top = `${targetY}px`;
             noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`; // Slight rotation and scale
-            noBtn.style.position = 'absolute';
         });
+
 
         noBtn.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent accidental click
@@ -314,7 +330,7 @@
             setTimeout(() => {
                 noBtn.style.animation = '';
             }, 300);
-            // Optionally, you can trigger another hover event to make it jump immediately again
+            // Trigger another hover event to make it jump immediately again
             const event = new MouseEvent('mouseover', {
                 'view': window,
                 'bubbles': true,
@@ -339,7 +355,7 @@
                 yesBtn.style.display = 'none';
 
                 // Update and show response text with animations
-                responseText.textContent = "Knew it! You're stuck with me, my love! ❤️ And I wouldn't have it any other way. 😉";
+                responseText.textContent = "My dearest Fiana, saying 'yes' to you is the easiest and most wonderful decision I've ever made. Every day with you is an adventure, a joy, and a dream come true. You light up my world, and I'm so incredibly grateful to have you by my side. Here's to countless more moments of laughter, love, and happiness together. I love you more than words can express! ❤️";
                 responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
                 // Create hearts for celebration
