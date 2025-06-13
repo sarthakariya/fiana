@@ -46,6 +46,7 @@
             border-radius: 50%;
             opacity: 0;
             animation: fall 12s linear infinite, drift 4s ease-in-out infinite alternate;
+            pointer-events: none; /* Allow clicks on elements beneath snowflakes */
         }
 
         @keyframes fall {
@@ -457,15 +458,18 @@
         function createSnowflake() {
             const flake = document.createElement('div');
             flake.classList.add('snowflake');
-            flake.style.left = `${Math.random() * 100}vw`;
-            flake.style.animationDelay = `${Math.random() * 10}s`;
-            flake.style.opacity = Math.random();
+            flake.style.left = `${Math.random() * 100}vw`; // Random horizontal position across viewport
+            flake.style.animationDelay = `${Math.random() * 10}s`; // Stagger animation start
+            flake.style.opacity = Math.random(); // Random opacity
+            flake.style.animationDuration = `${Math.random() * 8 + 6}s`; // Vary fall speed
+            flake.style.width = `${Math.random() * 4 + 2}px`; // Vary snowflake size
+            flake.style.height = flake.style.width;
             body.appendChild(flake);
 
-            // Remove snowflake after it falls
+            // Remove snowflake after it falls to keep DOM clean
             setTimeout(() => {
                 flake.remove();
-            }, 12000);
+            }, parseFloat(flake.style.animationDuration) * 1000);
         }
 
         // Generate snowflakes continuously
@@ -500,7 +504,7 @@
             let targetX = initialNoBtnLeft + newOffsetX;
             let targetY = initialNoBtnTop + newOffsetY;
 
-            // Clamp targetX and targetY to stay within mainContent boundaries
+            // Clamp targetX and targetY to stay strictly within mainContent boundaries
             const padding = 15; // Keep some internal padding from mainContent edges
 
             targetX = Math.max(padding, Math.min(targetX, mainContentRect.width - noBtnRect.width - padding));
