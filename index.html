@@ -15,7 +15,8 @@
             --question-color: #FF69B4; /* Hot Pink for main question/greeting */
             --yes-button-color: #4CAF50; /* Green for Yes button */
             --no-button-color: #F44336; /* Red for No button */
-            --response-color: #FF4136; /* Red for final response text */
+            --response-color: #FFFFFF; /* White for final response text */
+            --response-outline-color: #FF8888; /* Light Red for outline */
             --snowflake-color: rgba(255, 255, 255, 0.7);
         }
 
@@ -150,9 +151,13 @@
         #response {
             margin-top: 50px;
             font-size: 2.8em;
-            color: var(--response-color); /* Red color for response text */
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); /* Subtle white shadow for better readability on red */
-            animation: fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate; /* Removed textGlow animation */
+            color: var(--response-color); /* White color for response text */
+            text-shadow: 2px 2px var(--response-outline-color), /* Light Red outline */
+                         -2px -2px var(--response-outline-color),
+                         2px -2px var(--response-outline-color),
+                         -2px 2px var(--response-outline-color),
+                         0 0 10px rgba(0, 0, 0, 0.5); /* Subtle black shadow for depth */
+            animation: fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate;
             opacity: 0;
             transform: translateY(40px) scale(0.9);
             font-family: 'Dancing Script', cursive; /* Beautiful script for the final message */
@@ -445,10 +450,10 @@
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
-                // Adjusted response text with red color and removed glow
+                // Adjusted response text with white color and light red outline
                 responseText.innerHTML = "My sweet Fiana, every moment with you ignites a fire in my soul. Thank you for being the incredible girl you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
-                responseText.style.animation = 'fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate'; // Removed textGlow
-                responseText.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.2)'; // Ensure subtle white shadow remains
+                responseText.style.animation = 'fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate';
+                responseText.style.textShadow = '2px 2px var(--response-outline-color), -2px -2px var(--response-outline-color), 2px -2px var(--response-outline-color), -2px 2px var(--response-outline-color), 0 0 10px rgba(0, 0, 0, 0.5)'; // Applying outline and subtle shadow
 
                 for (let i = 0; i < 40; i++) {
                     createFloatingHeart();
