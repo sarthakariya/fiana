@@ -66,7 +66,7 @@
 
         /* Main Content Section */
         #main-content {
-            display: flex; /* Always flex now, hidden by opacity */
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -80,6 +80,8 @@
             opacity: 0;
             transform: scale(0.8);
             animation: initialFadeScaleIn 1.5s ease-out 0.5s forwards; /* New opening animation */
+            min-width: 300px; /* Ensure a minimum size for the glass box */
+            min-height: 250px; /* Ensure a minimum size for the glass box */
         }
 
         h1 {
@@ -103,7 +105,7 @@
             display: flex;
             justify-content: center;
             gap: 40px;
-            position: relative; /* For positioning the 'No' button */
+            /* The buttons container is no longer relative, as noBtn positioning relies on main-content */
             z-index: 2;
         }
 
@@ -137,12 +139,12 @@
             font-size: 1.2em;
             padding: 12px 25px;
             transform: scale(0.9); /* Smaller size */
-        }
-
-        /* Class added by JS when the 'No' button starts moving */
-        #noBtn.moved {
-            position: absolute;
+            position: absolute; /* Crucial for controlling its movement */
             transition: transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Initial position to prevent flash, will be set correctly by JS */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
         }
 
         #noBtn:hover {
@@ -340,7 +342,7 @@
 
         /* Exit animations for elements after "Yes" click */
         @keyframes fadeOutDisappear {
-            to { opacity: 0; visibility: hidden; } /* Use visibility: hidden for full disappearance */
+            to { opacity: 0; visibility: hidden; }
         }
 
         @keyframes bounceOut {
@@ -443,10 +445,36 @@
             "Oh, you adorable little tease! Press 'Yes' already, you know you want to."
         ];
 
-        // Global variables for 'No' button initial position (captured once)
-        let initialNoBtnLeft = 0;
-        let initialNoBtnTop = 0;
-        let noBtnFirstMove = true; // Flag to capture initial position
+        // Ensure the noBtn is positioned absolutely relative to mainContent from the start
+        // This makes sure its calculated positions are always relative to the main box.
+        // It's also critical that #main-content has `position: relative;`
+        mainContent.style.position = 'relative'; // Ensure main-content is positioned for noBtn
+
+        // Initial setup for the no button's position within main-content
+        // This prevents a 'jump' if the button is initially laid out by normal flow
+        // then suddenly made absolute.
+        function setInitialNoButtonPosition() {
+            const yesBtnRect = yesBtn.getBoundingClientRect();
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const mainContentRect = mainContent.getBoundingClientRect();
+
+            // Calculate 'No' button's initial desired position relative to mainContent's top-left
+            // Assuming it starts next to the 'Yes' button.
+            // Adjust these values if the initial layout changes significantly.
+            const initialLeft = (yesBtnRect.right + 40) - mainContentRect.left; // 40px gap
+            const initialTop = yesBtnRect.top - mainContentRect.top;
+
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${initialLeft}px`;
+            noBtn.style.top = `${initialTop}px`;
+            noBtn.classList.add('moved'); // Add 'moved' class to enable transitions
+        }
+
+        // Call it once when the script loads to set up the initial position
+        window.addEventListener('load', setInitialNoButtonPosition);
+        // Also call on resize in case layout changes (though less critical with current CSS)
+        window.addEventListener('resize', setInitialNoButtonPosition);
+
 
         // Add background particles (subtle animation for ambiance)
         for (let i = 0; i < 30; i++) {
@@ -479,36 +507,17 @@
             const mainContentRect = mainContent.getBoundingClientRect();
             const noBtnRect = noBtn.getBoundingClientRect();
 
-            if (noBtnFirstMove) {
-                // Capture initial position relative to mainContent's top-left
-                const noBtnViewportRect = noBtn.getBoundingClientRect();
-                initialNoBtnLeft = noBtnViewportRect.left - mainContentRect.left;
-                initialNoBtnTop = noBtnViewportRect.top - mainContentRect.top;
-                noBtnFirstMove = false;
+            // The padding from the edge of the glass box
+            const padding = 20;
 
-                // Immediately set position: absolute after first capture for smooth transition
-                noBtn.style.position = 'absolute';
-                noBtn.style.left = `${initialNoBtnLeft}px`;
-                noBtn.style.top = `${initialNoBtnTop}px`;
-                noBtn.classList.add('moved');
-            }
+            // Calculate the maximum possible x and y coordinates *within* mainContent
+            const maxX = mainContentRect.width - noBtnRect.width - padding;
+            const maxY = mainContentRect.height - noBtnRect.height - padding;
 
-            // Increased movement range for longer distances
-            const maxMovementRange = 250; // Max distance in pixels from the initial position
-
-            // Calculate new random offset within the desired range from the initial position
-            let newOffsetX = (Math.random() - 0.5) * 2 * maxMovementRange; // -range to +range
-            let newOffsetY = (Math.random() - 0.5) * 2 * maxMovementRange;
-
-            // Calculate target position relative to mainContent
-            let targetX = initialNoBtnLeft + newOffsetX;
-            let targetY = initialNoBtnTop + newOffsetY;
-
-            // Clamp targetX and targetY to stay strictly within mainContent boundaries
-            const padding = 15; // Keep some internal padding from mainContent edges
-
-            targetX = Math.max(padding, Math.min(targetX, mainContentRect.width - noBtnRect.width - padding));
-            targetY = Math.max(padding, Math.min(targetY, mainContentRect.height - noBtnRect.height - padding));
+            // Generate random target positions within the mainContent
+            // The `+ padding` ensures it doesn't go into negative coordinates (left/top edge)
+            let targetX = Math.random() * (maxX - padding) + padding;
+            let targetY = Math.random() * (maxY - padding) + padding;
 
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
@@ -544,19 +553,27 @@
 
         // --- "Yes" button logic ---
         yesBtn.addEventListener('click', () => {
+            // Fade out question text, intro text, and yes button
             questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             introText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
             teaseResponseText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards'; // Fade out tease text
 
+            // Keep 'No' button visible but move it slightly
+            noBtn.style.animation = 'none'; // Clear any shake animation
+            noBtn.style.transition = 'transform 0.5s ease, opacity 0.5s ease'; // Smooth transition for new state
+            noBtn.style.transform = 'translateY(150px) scale(0.7)'; // Move it down and shrink a bit
+            noBtn.style.opacity = 0.6; // Make it slightly transparent
+            noBtn.style.pointerEvents = 'none'; // Disable clicks on 'No' after 'Yes' is pressed
+
             setTimeout(() => {
                 questionText.style.display = 'none';
                 introText.style.display = 'none';
                 yesBtn.style.display = 'none';
-                teaseResponseText.style.display = 'none'; // Ensure tease text is hidden
+                teaseResponseText.style.display = 'none';
 
-                // No longer setting noBtn.style.display = 'none';
-                // noBtn will remain visible and interactive after 'Yes' is clicked.
+                // Ensure the 'No' button remains, but just its state changes
+                // noBtn.style.display = 'block'; // Or simply don't set to 'none'
 
                 // Adjusted response text with white color and light red outline
                 responseText.innerHTML = "My sweet Fiana, every moment with you ignites a fire in my soul. Thank you for being the incredible girl you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
