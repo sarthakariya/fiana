@@ -18,6 +18,7 @@
             --response-color: #FFFFFF; /* White for final response text */
             --response-outline-color: #FF8888; /* Light Red for outline */
             --snowflake-color: rgba(255, 255, 255, 0.7);
+            --tease-text-color: #FFD700; /* Gold for teasy text */
         }
 
         body {
@@ -146,6 +147,16 @@
         #noBtn:hover {
             background-color: #F44336; /* Stays red on hover */
             cursor: not-allowed; /* Indicates it's hard to catch */
+        }
+
+        #teaseResponse {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5em; /* Smaller than main response */
+            color: var(--tease-text-color); /* Gold color */
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease-out; /* Smooth fade for tease text */
+            min-height: 1.5em; /* Prevent layout shift when text appears */
         }
 
         #response {
@@ -331,10 +342,6 @@
             to { opacity: 0; display: none; }
         }
 
-        @keyframes slideAwayLeft {
-            to { transform: translateX(-200%); opacity: 0; }
-        }
-
         @keyframes bounceOut {
             0% { transform: scale(1); }
             20% { transform: scale(1.2); }
@@ -357,7 +364,7 @@
             <button id="yesBtn">Absolutely, my love! 😉</button>
             <button id="noBtn">No</button>
         </div>
-        <p id="response"></p>
+        <p id="teaseResponse"></p> <p id="response"></p>
     </div>
 
     <div class="bg-graphic heart-outline graphic-1"></div>
@@ -373,7 +380,17 @@
         const questionText = document.getElementById('questionText');
         const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
+        const teaseResponseText = document.getElementById('teaseResponse'); // Get the new tease text element
         const body = document.body;
+
+        const teasyPhrases = [
+            "Are you sure about that, sweetie? My heart says otherwise 😉",
+            "Didn't you wear your glasses today, Fiana? Or maybe your heart's a little blurry?",
+            "Hmm, that 'No' sounds awfully like a 'Yes, please!' to me. Just sayin'...",
+            "Is that your final answer? Because I think we both know the real one...",
+            "Come on, you can't resist this much charm! Try again. ❤️",
+            "Oh, you adorable little tease! Press 'Yes' already, you know you want to."
+        ];
 
         // Add background particles (subtle animation for ambiance)
         for (let i = 0; i < 30; i++) {
@@ -398,8 +415,8 @@
         // Generate snowflakes continuously
         setInterval(createSnowflake, 300); // Create a snowflake every 300 milliseconds
 
-        // --- "No" button logic ---
-        noBtn.addEventListener('mouseover', () => {
+        // Function to handle "No" button movement
+        function moveNoButton() {
             const containerRect = mainContent.getBoundingClientRect();
             const noBtnRect = noBtn.getBoundingClientRect();
             const buttonsContainer = noBtn.parentElement;
@@ -413,42 +430,55 @@
                 noBtn.classList.add('moved');
             }
 
-            const padding = 30;
+            const padding = 30; // Keep some padding from edges
+            // Calculate new random position within the main content area
             const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
             const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
 
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
-            noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`;
+            noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`; // Add subtle rotation
+        }
+
+        // Function to display a random teasy text
+        function displayTeasyText() {
+            const randomIndex = Math.floor(Math.random() * teasyPhrases.length);
+            teaseResponseText.textContent = teasyPhrases[randomIndex];
+            teaseResponseText.style.opacity = 1; // Make it visible
+
+            // Set a timeout to fade it out after a few seconds
+            setTimeout(() => {
+                teaseResponseText.style.opacity = 0;
+            }, 3000); // Display for 3 seconds
+        }
+
+        // --- "No" button logic ---
+        noBtn.addEventListener('mouseover', () => {
+            moveNoButton(); // Jumps on hover
         });
 
         noBtn.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent default button behavior
-            noBtn.style.animation = 'shake 0.3s ease';
+            noBtn.style.animation = 'shake 0.3s ease'; // Shake animation
             setTimeout(() => {
-                noBtn.style.animation = '';
+                noBtn.style.animation = ''; // Reset animation
+                moveNoButton(); // Make it jump again immediately after shaking
+                displayTeasyText(); // Show a teasy message
             }, 300);
-            // Trigger mouseover again to make it jump immediately after shaking
-            const event = new MouseEvent('mouseover', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': true
-            });
-            noBtn.dispatchEvent(event);
         });
 
         // --- "Yes" button logic ---
         yesBtn.addEventListener('click', () => {
             questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             introText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
-            noBtn.style.animation = 'slideAwayLeft 0.8s ease-in forwards';
             yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
+            teaseResponseText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards'; // Fade out tease text
 
             setTimeout(() => {
                 questionText.style.display = 'none';
                 introText.style.display = 'none';
-                noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
+                teaseResponseText.style.display = 'none'; // Ensure tease text is hidden
 
                 // Adjusted response text with white color and light red outline
                 responseText.innerHTML = "My sweet Fiana, every moment with you ignites a fire in my soul. Thank you for being the incredible girl you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
