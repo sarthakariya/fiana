@@ -16,7 +16,6 @@
             --yes-button-color: #4CAF50; /* Green for Yes button */
             --no-button-color: #F44336; /* Red for No button */
             --response-color: #FF4136; /* Red for final response text */
-            --glow-color: #FFD700; /* Gold color for text glow */
             --snowflake-color: rgba(255, 255, 255, 0.7);
         }
 
@@ -153,7 +152,7 @@
             font-size: 2.8em;
             color: var(--response-color); /* Red color for response text */
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); /* Subtle white shadow for better readability on red */
-            animation: fadeInSlideUp 2s ease-out forwards, textGlow 2s ease-in-out infinite alternate, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate; /* Added scaleResponse animation */
+            animation: fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate; /* Removed textGlow animation */
             opacity: 0;
             transform: translateY(40px) scale(0.9);
             font-family: 'Dancing Script', cursive; /* Beautiful script for the final message */
@@ -271,12 +270,6 @@
         @keyframes fadeInSlideUp {
             from { opacity: 0; transform: translateY(40px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* New: Text glowing effect */
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 5px var(--response-color), 0 0 10px var(--response-color), 0 0 5px rgba(255, 255, 255, 0.2); } /* Subtle white shadow for readability */
-            50% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color), 0 0 5px rgba(255, 255, 255, 0.2); }
         }
 
         /* New: Text jiggle effect */
@@ -452,9 +445,9 @@
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
-                // Adjusted response text with red color
+                // Adjusted response text with red color and removed glow
                 responseText.innerHTML = "My sweet Fiana, every moment with you ignites a fire in my soul. Thank you for being the incredible girl you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
-                responseText.style.animation = 'fadeInSlideUp 2s ease-out forwards, textGlow 2s ease-in-out infinite alternate, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate'; // Keep all animations
+                responseText.style.animation = 'fadeInSlideUp 2s ease-out forwards, textJiggle 0.5s ease-in-out infinite alternate, scaleResponse 4s infinite alternate'; // Removed textGlow
                 responseText.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.2)'; // Ensure subtle white shadow remains
 
                 for (let i = 0; i < 40; i++) {
