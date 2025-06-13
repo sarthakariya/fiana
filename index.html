@@ -12,8 +12,8 @@
             --dark-bg: #1a1a1a;
             --light-text: #f0f0f0;
             --question-color: #FF69B4; /* Hot Pink for question */
-            --yes-button-color: #FF4081; /* Brighter Pink for Yes */
-            --no-button-color: #4CAF50; /* Green for No (less dominant) */
+            --yes-button-color: #4CAF50; /* Green for Yes */
+            --no-button-color: #F44336; /* Red for No */
             --response-color: #FFD700; /* Gold for highlight */
         }
 
@@ -42,12 +42,20 @@
         }
 
         h1 {
-            font-family: 'Great Vibes', cursive; /* Flowy, elegant font for the main question */
+            font-family: 'Great Vibes', cursive; /* Flowy, elegant font for the main greeting */
             font-size: 4em;
-            margin-bottom: 40px;
+            margin-bottom: 5px; /* Adjust spacing */
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
             color: var(--question-color); /* Hot pink for the question */
             animation: gentlePulse 2s ease-in-out infinite alternate;
+        }
+
+        #introText {
+            font-family: 'Dancing Script', cursive; /* Beautiful, elegant script for response */
+            font-size: 1.8em;
+            margin-bottom: 40px; /* Space before buttons */
+            color: var(--light-text);
+            animation: fadeIn 1.5s ease-out;
         }
 
         .buttons {
@@ -76,15 +84,15 @@
         }
 
         #yesBtn {
-            background-color: var(--yes-button-color);
+            background-color: var(--yes-button-color); /* Green */
         }
 
         #yesBtn:hover {
-            background-color: #FF1493; /* Deeper Pink */
+            background-color: #4CAF50; /* Stays green, might darken slightly */
         }
 
         #noBtn {
-            background-color: var(--no-button-color); /* Green for "No" */
+            background-color: var(--no-button-color); /* Red */
             position: absolute;
             font-size: 1.2em; /* Smaller, less prominent */
             padding: 12px 25px;
@@ -92,7 +100,7 @@
         }
 
         #noBtn:hover {
-            background-color: #4CAF50; /* Stays green, just moves */
+            background-color: #F44336; /* Stays red, just moves */
             cursor: not-allowed; /* Indicate it's hard to catch */
         }
 
@@ -148,6 +156,35 @@
             z-index: 0;
         }
 
+        /* Background graphics */
+        .bg-graphic {
+            position: absolute;
+            opacity: 0.2; /* Subtle opacity */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-graphic.heart-outline {
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>') no-repeat center center / contain;
+            animation: rotateAndFloat 20s infinite linear;
+        }
+
+        .bg-graphic.sparkle-icon {
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>') no-repeat center center / contain;
+            animation: fadeInOut 15s infinite ease-in-out;
+        }
+
+        /* Positioning for background graphics */
+        .graphic-1 { top: 10%; left: 10%; }
+        .graphic-2 { bottom: 15%; right: 10%; animation-delay: -5s !important; }
+        .graphic-3 { top: 20%; right: 20%; animation-delay: -10s !important; }
+        .graphic-4 { bottom: 5%; left: 25%; }
+        .graphic-5 { top: 50%; left: 5%; transform: translateY(-50%); animation-delay: -7s !important; }
+
         /* Animations */
         @keyframes softGradientShift {
             0% { background-position: 0% 50%; }
@@ -185,6 +222,16 @@
             100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
         }
 
+        @keyframes rotateAndFloat {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.2; }
+        }
+
         /* Exit animations for elements after "Yes" */
         @keyframes fadeOutDisappear {
             to { opacity: 0; display: none; }
@@ -199,11 +246,21 @@
             20% { transform: scale(1.2); }
             100% { transform: scale(0) rotate(180deg); opacity: 0; }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <h1 id="questionText">Hey Fiana, my mischievous darling!</h1>
+        <p id="introText">Just a little something to make you smile even more today.</p>
         <div class="buttons">
             <button id="yesBtn">Oh, you know it's a 'Yes'! 😉</button>
             <button id="noBtn">Hmm, let me think...</button>
@@ -211,10 +268,17 @@
         <p id="response"></p>
     </div>
 
+    <div class="bg-graphic heart-outline graphic-1"></div>
+    <div class="bg-graphic sparkle-icon graphic-2"></div>
+    <div class="bg-graphic heart-outline graphic-3"></div>
+    <div class="bg-graphic sparkle-icon graphic-4"></div>
+    <div class="bg-graphic heart-outline graphic-5"></div>
+
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const questionText = document.getElementById('questionText');
+        const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
         const container = document.getElementById('container');
         const body = document.body;
@@ -261,15 +325,20 @@
 
         // Handle "Yes" button click
         yesBtn.addEventListener('click', () => {
+            // Apply exit animations to existing elements
             questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
+            introText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             noBtn.style.animation = 'slideAwayLeft 0.8s ease-in forwards';
             yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
 
             setTimeout(() => {
+                // Hide elements after their animations complete
                 questionText.style.display = 'none';
+                introText.style.display = 'none';
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
+                // Update and show response text with animations
                 responseText.textContent = "Knew it! You're stuck with me, my love! ❤️ And I wouldn't have it any other way. 😉";
                 responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
