@@ -31,7 +31,6 @@
             text-align: center;
             overflow: hidden; /* Hide overflow for animations */
             margin: 0;
-            /* Background gradient animation for main content */
             background-size: 200% 200%; /* Ensure gradient covers enough area for shifting */
         }
 
@@ -39,43 +38,68 @@
         #envelope-container {
             position: relative;
             cursor: pointer;
-            animation: fadeIn 1s ease-out 0.5s forwards; /* Fade in the envelope initially */
-            opacity: 0;
+            width: 200px;
+            height: 150px;
+            transform-style: preserve-3d; /* Needed for 3D rotation */
+            perspective: 1000px; /* For 3D effect */
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0; /* Starts hidden */
         }
 
         #envelope {
-            width: 200px;
-            height: 150px;
+            width: 100%;
+            height: 100%;
             background-color: var(--envelope-color);
             position: relative;
             border-radius: 5px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            transform-origin: top; /* For opening animation */
-            animation: closeEnvelope 1.5s ease-in-out 2s forwards; /* Initial state, as if closing */
+            box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.4);
+            transform-origin: top; /* For flap rotation */
+            transition: transform 0.8s ease-in-out; /* Smooth open/close */
         }
 
         /* Envelope flaps using pseudo-elements */
-        #envelope::before { /* Top flap */
-            content: '';
+        #envelope-flap-top {
             position: absolute;
             left: 0;
             top: 0;
-            border-left: 100px solid transparent;
-            border-right: 100px solid transparent;
-            border-bottom: 75px solid #e0d8c5; /* Darker shade for depth */
-            border-top: 75px solid #e0d8c5;
+            width: 100%;
+            height: 50%; /* Covers top half */
+            background-color: #e0d8c5; /* Darker shade for flap */
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
+            transform-origin: bottom;
+            transform: rotateX(0deg); /* Initial closed state */
+            z-index: 2;
+            transition: transform 0.8s ease-in-out;
         }
 
-        #envelope::after { /* Bottom flap */
-            content: '';
+        #envelope-flap-bottom { /* This makes the triangle shape */
             position: absolute;
             left: 0;
             bottom: 0;
             border-left: 100px solid transparent;
             border-right: 100px solid transparent;
-            border-top: 75px solid #e0d8c5; /* Darker shade */
+            border-top: 75px solid var(--envelope-color); /* Matches envelope body */
+            z-index: 1;
+        }
+
+        #envelope-front-left, #envelope-front-right {
+            position: absolute;
+            bottom: 0;
+            height: 100%;
+            width: 50%; /* Half width */
+            background-color: var(--envelope-color);
+            z-index: 1;
+        }
+
+        #envelope-front-left {
+            left: 0;
+            border-bottom-left-radius: 5px;
+        }
+
+        #envelope-front-right {
+            right: 0;
+            border-bottom-right-radius: 5px;
         }
 
         #letter {
@@ -86,15 +110,17 @@
             height: calc(100% - 20px);
             background-color: var(--letter-color);
             border-radius: 3px;
-            transform: translateY(10px); /* Slightly pushed down initially */
+            transform: translateY(60px) scale(0.8); /* Starts lower and smaller */
             opacity: 0;
-            animation: slideUpLetter 1s ease-out 1.5s forwards; /* Slide up to show text */
+            z-index: 0; /* Below the flap */
+            transition: transform 1s ease-out, opacity 0.8s ease-out;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
             text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         #letter-content {
@@ -102,7 +128,7 @@
             font-size: 2em;
             color: #333; /* Dark text on light letter */
             opacity: 0;
-            animation: fadeIn 0.8s ease-in-out 2.5s forwards, pulse 1.5s ease-in-out infinite alternate; /* Text pulse */
+            transition: opacity 0.8s ease-in-out;
         }
 
         /* Main Content Section (Hidden until envelope opens) */
@@ -118,6 +144,9 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
+            /* Added for smooth transition from envelope */
+            opacity: 0;
+            transform: scale(0.9);
         }
 
         h1 {
@@ -180,6 +209,7 @@
         /* Class added by JS when the 'No' button starts moving */
         #noBtn.moved {
             position: absolute;
+            /* Adjusted transition for smooth movement after first hover */
             transition: transform 0.1s ease-out, left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -247,7 +277,7 @@
             opacity: 0.2; /* Subtle opacity */
             pointer-events: none;
             z-index: 0;
-            animation-delay: var(--animation-delay, 0s); /* Stagger start times */
+            animation-delay: var(--animation-delay, 0s);
         }
 
         .bg-graphic.heart-outline {
@@ -281,15 +311,16 @@
             to { opacity: 1; }
         }
 
-        /* Envelope open/close animation */
-        @keyframes closeEnvelope {
-            from { transform: rotateX(-120deg); } /* Starts open */
-            to { transform: rotateX(0deg); } /* Closes */
+        /* Envelope opening animations */
+        @keyframes openFlap {
+            from { transform: rotateX(0deg); }
+            to { transform: rotateX(-120deg); } /* Opens upwards */
         }
-        /* Letter slide animation */
-        @keyframes slideUpLetter {
-            from { transform: translateY(10px); opacity: 0; }
-            to { transform: translateY(-10px); opacity: 1; }
+
+        @keyframes slideLetterOut {
+            0% { transform: translateY(60px) scale(0.8); opacity: 0; }
+            50% { transform: translateY(-10px) scale(1); opacity: 1; } /* Slides up and becomes visible */
+            100% { transform: translateY(-10px) scale(1); opacity: 1; }
         }
 
         /* Main content fade in and scale up */
@@ -382,10 +413,14 @@
     </style>
 </head>
 <body>
-    <div id="envelope-container" onclick="openEnvelope()">
+    <div id="envelope-container">
         <div id="envelope">
+            <div id="envelope-flap-top"></div>
+            <div id="envelope-front-left"></div>
+            <div id="envelope-front-right"></div>
+            <div id="envelope-flap-bottom"></div>
             <div id="letter">
-                <div id="letter-content">Tap to open...</div>
+                <div id="letter-content">A secret message awaits!</div>
             </div>
         </div>
     </div>
@@ -408,65 +443,77 @@
 
     <script>
         const envelopeContainer = document.getElementById('envelope-container');
+        const envelopeFlapTop = document.getElementById('envelope-flap-top');
+        const letter = document.getElementById('letter');
+        const letterContent = document.getElementById('letter-content');
         const mainContent = document.getElementById('main-content');
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const questionText = document.getElementById('questionText');
         const introText = document.getElementById('introText');
         const responseText = document.getElementById('response');
-        const body = document.body; // Use body for particles/hearts
-
-        // Function to reveal the main content after envelope click
-        function openEnvelope() {
-            envelopeContainer.style.animation = 'fadeOut 0.5s ease-in forwards'; // Fade out envelope
-            setTimeout(() => {
-                envelopeContainer.style.display = 'none'; // Hide envelope
-                mainContent.style.display = 'flex'; // Show main content
-                body.style.animation = 'softGradientShift 15s ease-in-out infinite alternate'; // Start background gradient animation
-            }, 500); // Wait for fadeOut animation
-        }
+        const body = document.body;
 
         // Add background particles (subtle animation for ambiance)
         for (let i = 0; i < 30; i++) {
             createParticle();
         }
 
-        // --- "No" button logic ---
-        // This makes the "No" button move randomly when hovered over.
-        noBtn.addEventListener('mouseover', () => {
-            const containerRect = mainContent.getBoundingClientRect(); // Get dimensions of the main content area
-            const noBtnRect = noBtn.getBoundingClientRect(); // Get dimensions of the "No" button
-            const buttonsContainer = noBtn.parentElement; // Get the .buttons div
+        // --- Automatic Envelope Opening Sequence ---
+        // Step 1: Letter slides up and content appears
+        setTimeout(() => {
+            letter.style.transform = 'translateY(-10px) scale(1)';
+            letter.style.opacity = '1';
+            setTimeout(() => {
+                letterContent.style.opacity = '1';
+                letterContent.style.animation = 'pulse 1.5s ease-in-out infinite alternate'; // Start pulsing
+            }, 800); // After letter finishes sliding up
+        }, 1500); // Initial delay before letter starts to slide
 
-            // If the button isn't already positioned absolutely, set its initial absolute position
-            // relative to its current spot to ensure smooth transition.
+        // Step 2: Envelope flap opens
+        setTimeout(() => {
+            envelopeFlapTop.style.transform = 'rotateX(-120deg)'; // Open the flap
+        }, 3500); // After letter content is visible
+
+        // Step 3: Transition to main content
+        setTimeout(() => {
+            envelopeContainer.style.animation = 'fadeOut 0.8s ease-in forwards'; // Fade out envelope
+            mainContent.style.display = 'flex'; // Prepare main content for display
+            mainContent.style.animation = 'fadeInScaleUp 1s ease-out forwards'; // Animate main content in
+            body.style.animation = 'softGradientShift 15s ease-in-out infinite alternate'; // Start background gradient animation
+        }, 4500); // After flap fully opens
+
+        // --- "No" button logic ---
+        noBtn.addEventListener('mouseover', () => {
+            const containerRect = mainContent.getBoundingClientRect();
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const buttonsContainer = noBtn.parentElement;
+
+            // Ensure button is positioned absolutely within mainContent for free movement
             if (noBtn.style.position !== 'absolute') {
                 noBtn.style.position = 'absolute';
-                // Calculate its position relative to the mainContent div
+                // Calculate its initial absolute position relative to the mainContent div
                 noBtn.style.left = `${noBtn.offsetLeft + buttonsContainer.offsetLeft}px`;
                 noBtn.style.top = `${noBtn.offsetTop + buttonsContainer.offsetTop}px`;
-                noBtn.classList.add('moved'); // Add a class for smoother transition
+                noBtn.classList.add('moved');
             }
 
-            // Calculate new random positions within the bounds of the main content container
-            const padding = 30; // Keep button away from edges
+            const padding = 30;
             const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
             const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
 
-            // Apply new position and a slight random rotation
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
             noBtn.style.transform = `scale(0.9) rotate(${Math.random() * 20 - 10}deg)`;
         });
 
-        // Add a little shake animation on click for "No" button
         noBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default button behavior (e.g., form submission)
-            noBtn.style.animation = 'shake 0.3s ease'; // Apply shake animation
+            e.preventDefault();
+            noBtn.style.animation = 'shake 0.3s ease';
             setTimeout(() => {
-                noBtn.style.animation = ''; // Remove animation after it completes
+                noBtn.style.animation = '';
             }, 300);
-            // Trigger another mouseover event to make it jump instantly after shaking
+            // Trigger mouseover again to make it jump immediately after shaking
             const event = new MouseEvent('mouseover', {
                 'view': window,
                 'bubbles': true,
@@ -477,58 +524,54 @@
 
         // --- "Yes" button logic ---
         yesBtn.addEventListener('click', () => {
-            // Apply exit animations to all elements on the first slide
             questionText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             introText.style.animation = 'fadeOutDisappear 0.8s ease-in forwards';
             noBtn.style.animation = 'slideAwayLeft 0.8s ease-in forwards';
             yesBtn.style.animation = 'bounceOut 0.8s ease-in forwards';
 
             setTimeout(() => {
-                // Hide elements completely after their animations finish
                 questionText.style.display = 'none';
                 introText.style.display = 'none';
                 noBtn.style.display = 'none';
                 yesBtn.style.display = 'none';
 
-                // Update the response text with the special message and animations
                 responseText.innerHTML = "My sweet Fiona, every moment with you ignites a fire in my soul. Thank you for being the incredible woman you are. Now, about making this *officially* web-official... let's just say clicking 'yes' means I get to unleash all sorts of delightful naughtiness on you later. 😉 I love you! ❤️";
                 responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
-                // Create a shower of floating hearts for celebration
                 for (let i = 0; i < 40; i++) {
                     createFloatingHeart();
                 }
-            }, 800); // Delay hiding until exit animations are mostly done
+            }, 800);
         });
 
         // --- Helper functions for dynamic animations ---
         function createFloatingHeart() {
             const heart = document.createElement('div');
             heart.classList.add('floating-heart');
-            body.appendChild(heart); // Append to body to float over everything
+            body.appendChild(heart);
 
-            const size = Math.random() * 30 + 20; // Random size from 20px to 50px
+            const size = Math.random() * 30 + 20;
             heart.style.width = `${size}px`;
             heart.style.height = `${size}px`;
-            heart.style.left = `${Math.random() * 100}vw`; // Random horizontal start position
-            heart.style.bottom = `-50px`; // Start from below the viewport
-            heart.style.animationDuration = `${Math.random() * 4 + 4}s`; // Random animation duration (4-8s)
-            heart.style.animationDelay = `-${Math.random() * 4}s`; // Stagger animation start times
+            heart.style.left = `${Math.random() * 100}vw`;
+            heart.style.bottom = `-50px`;
+            heart.style.animationDuration = `${Math.random() * 4 + 4}s`;
+            heart.style.animationDelay = `-${Math.random() * 4}s`;
             heart.style.opacity = 0.8;
         }
 
         function createParticle() {
             const particle = document.createElement('div');
             particle.classList.add('particle');
-            body.appendChild(particle); // Append to body for background effect
+            body.appendChild(particle);
 
-            const size = Math.random() * 5 + 2; // Random size from 2px to 7px
+            const size = Math.random() * 5 + 2;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
-            particle.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-            particle.style.top = `${Math.random() * 100}vh`; // Random vertical start position
-            particle.style.animationDuration = `${Math.random() * 10 + 5}s`; // Random animation duration (5-15s)
-            particle.style.animationDelay = `-${Math.random() * 10}s`; // Stagger animation start times
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.top = `${Math.random() * 100}vh`;
+            particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            particle.style.animationDelay = `-${Math.random() * 10}s`;
         }
     </script>
 </body>
