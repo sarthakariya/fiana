@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Little Message for Fiana</title>
+    <title>A Little Message for Fiona</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Pinyon+Script&family=Sacramento&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -93,7 +93,7 @@
 
         #noBtn {
             background-color: var(--no-button-color); /* Red */
-            /* Removed 'position: absolute;' to keep it side-by-side */
+            /* Removed 'position: absolute;' to keep it side-by-side initially */
             font-size: 1.2em; /* Smaller, less prominent */
             padding: 12px 25px;
             transform: scale(0.9); /* Slightly smaller initially */
@@ -264,11 +264,11 @@
 </head>
 <body>
     <div id="container">
-        <h1 id="questionText">Hey Fiana, my mischievous darling!</h1>
-        <p id="introText">You know we're already writing our beautiful story together... but let's make this official on the web!</p>
+        <h1 id="questionText">Hey Fiona, my mischievous darling!</h1>
+        <p id="introText">You know we're already writing our beautiful story together... but let's make this *officially* official on the web, shall we?</p>
         <div class="buttons">
             <button id="yesBtn">Of course, my love! 🥰</button>
-            <button id="noBtn">Hmmm, let me think about that...</button>
+            <button id="noBtn">No</button>
         </div>
         <p id="response"></p>
     </div>
@@ -303,20 +303,16 @@
             // Set position to absolute *only* when starting to move
             if (noBtn.style.position !== 'absolute') {
                 noBtn.style.position = 'absolute';
-                // Calculate initial absolute position relative to its current spot in .buttons
-                noBtn.style.left = `${noBtn.offsetLeft}px`;
-                noBtn.style.top = `${noBtn.offsetTop}px`;
+                // Calculate initial absolute position relative to the main container
+                noBtn.style.left = `${noBtn.offsetLeft + buttonsRect.left - containerRect.left}px`;
+                noBtn.style.top = `${noBtn.offsetTop + buttonsRect.top - containerRect.top}px`;
                 noBtn.classList.add('moved'); // Add a class to apply absolute positioning transition
             }
 
-            // Calculate new random positions within the container
+            // Calculate new random positions within the main container
             const padding = 30;
-            // The boundaries should be relative to the 'buttons' container if the button is within it
-            // Or relative to the main 'container' div if it should float anywhere
-            // For floating within the main container for more chaotic movement:
             const targetX = Math.random() * (containerRect.width - noBtnRect.width - (padding * 2)) + padding;
             const targetY = Math.random() * (containerRect.height - noBtnRect.height - (padding * 2)) + padding;
-
 
             noBtn.style.left = `${targetX}px`;
             noBtn.style.top = `${targetY}px`;
@@ -355,7 +351,7 @@
                 yesBtn.style.display = 'none';
 
                 // Update and show response text with animations
-                responseText.textContent = "My dearest Fiana, saying 'yes' to you is the easiest and most wonderful decision I've ever made. Every day with you is an adventure, a joy, and a dream come true. You light up my world, and I'm so incredibly grateful to have you by my side. Here's to countless more moments of laughter, love, and happiness together. I love you more than words can express! ❤️";
+                responseText.textContent = "My dearest Fiona, saying 'yes' to you is the easiest and most wonderful decision I've ever made. Every day with you is an adventure, a joy, and a dream come true. You light up my world, and I'm so incredibly grateful to have you by my side. Here's to countless more moments of laughter, love, and happiness together, officially acknowledged in pixels and code! I love you more than words can express! ❤️";
                 responseText.style.animation = 'fadeInSlideUp 1.5s ease-out forwards, sparkleText 0.8s linear infinite alternate';
 
                 // Create hearts for celebration
